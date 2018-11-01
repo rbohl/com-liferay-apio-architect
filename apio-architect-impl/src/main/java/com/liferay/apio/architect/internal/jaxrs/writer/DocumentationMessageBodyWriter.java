@@ -21,8 +21,6 @@ import com.liferay.apio.architect.internal.request.RequestInfo;
 import com.liferay.apio.architect.internal.wiring.osgi.manager.message.json.DocumentationMessageMapperManager;
 import com.liferay.apio.architect.internal.writer.DocumentationWriter;
 
-import java.lang.reflect.Type;
-
 import java.util.Optional;
 
 import javax.ws.rs.core.Request;
@@ -50,12 +48,8 @@ public class DocumentationMessageBodyWriter
 	extends BaseMessageBodyWriter<Documentation, DocumentationMessageMapper> {
 
 	@Override
-	public boolean canWrite(Class<?> clazz, Type genericType) {
-		if (clazz == Documentation.class) {
-			return true;
-		}
-
-		return false;
+	public boolean canWrite(Class<?> clazz) {
+		return Documentation.class.isAssignableFrom(clazz);
 	}
 
 	@Override
