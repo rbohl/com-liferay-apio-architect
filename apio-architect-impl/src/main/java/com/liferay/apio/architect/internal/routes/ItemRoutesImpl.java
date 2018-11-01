@@ -16,8 +16,6 @@ package com.liferay.apio.architect.internal.routes;
 
 import static com.liferay.apio.architect.internal.unsafe.Unsafe.unsafeCast;
 
-import static java.util.Arrays.asList;
-
 import com.liferay.apio.architect.alias.IdentifierFunction;
 import com.liferay.apio.architect.alias.form.FormBuilderFunction;
 import com.liferay.apio.architect.alias.routes.CustomItemFunction;
@@ -54,7 +52,6 @@ import com.liferay.apio.architect.uri.Path;
 import io.vavr.CheckedRunnable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,9 +136,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			BiFunction<Credentials, S, Boolean> permissionBiFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = _getForm(
-				formBuilderFunction,
-				asList("p", _itemResource.name(), customRoute.getName()));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			Class<?> bodyClass = form == null ? Void.class : Body.class;
 
@@ -180,9 +175,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 				BiFunction<Credentials, S, Boolean> permissionBiFunction,
 				FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = _getForm(
-				formBuilderFunction,
-				asList("p", _itemResource.name(), customRoute.getName()));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			Class<?> bodyClass = form == null ? Void.class : Body.class;
 
@@ -222,9 +215,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 				BiFunction<Credentials, S, Boolean> permissionBiFunction,
 				FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = _getForm(
-				formBuilderFunction,
-				asList("p", _itemResource.name(), customRoute.getName()));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			Class<?> bodyClass = form == null ? Void.class : Body.class;
 
@@ -263,9 +254,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 				BiFunction<Credentials, S, Boolean> permissionBiFunction,
 				FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = _getForm(
-				formBuilderFunction,
-				asList("p", _itemResource.name(), customRoute.getName()));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			Class<?> bodyClass = form == null ? Void.class : Body.class;
 
@@ -302,9 +291,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			BiFunction<Credentials, S, Boolean> permissionBiFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = _getForm(
-				formBuilderFunction,
-				asList("p", _itemResource.name(), customRoute.getName()));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			Class<?> bodyClass = form == null ? Void.class : Body.class;
 
@@ -619,7 +606,6 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					Arrays.asList("u", _itemResource.name()),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
@@ -655,7 +641,6 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					Arrays.asList("u", _itemResource.name()),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
@@ -693,7 +678,6 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					Arrays.asList("u", _itemResource.name()),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
@@ -730,7 +714,6 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					Arrays.asList("u", _itemResource.name()),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
@@ -766,7 +749,6 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					Arrays.asList("u", _itemResource.name()),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
@@ -799,12 +781,12 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 		}
 
 		private <R> Form<R> _getForm(
-			FormBuilderFunction<R> formBuilderFunction, List<String> paths) {
+			FormBuilderFunction<R> formBuilderFunction) {
 
 			if (formBuilderFunction != null) {
 				return formBuilderFunction.apply(
 					new FormImpl.BuilderImpl<>(
-						paths, _pathToIdentifierFunction, _nameFunction));
+						_pathToIdentifierFunction, _nameFunction));
 			}
 
 			return null;

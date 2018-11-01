@@ -16,7 +16,6 @@ package com.liferay.apio.architect.internal.routes;
 
 import static com.liferay.apio.architect.internal.unsafe.Unsafe.unsafeCast;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 import com.liferay.apio.architect.alias.IdentifierFunction;
@@ -144,7 +143,6 @@ public class NestedCollectionRoutesImpl<T, S, U>
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					asList("c", parentName, nestedName),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics batchCreateActionSemantics =
@@ -230,7 +228,6 @@ public class NestedCollectionRoutesImpl<T, S, U>
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					asList("c", parentName, nestedName),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics batchCreateActionSemantics =
@@ -320,7 +317,6 @@ public class NestedCollectionRoutesImpl<T, S, U>
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					asList("c", parentName, nestedName),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics batchCreateActionSemantics =
@@ -407,7 +403,6 @@ public class NestedCollectionRoutesImpl<T, S, U>
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					asList("c", parentName, nestedName),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics batchCreateActionSemantics =
@@ -491,7 +486,6 @@ public class NestedCollectionRoutesImpl<T, S, U>
 
 			Form<R> form = formBuilderFunction.apply(
 				new FormImpl.BuilderImpl<>(
-					asList("c", parentName, nestedName),
 					_pathToIdentifierFunction, _nameFunction));
 
 			ActionSemantics batchCreateActionSemantics =
