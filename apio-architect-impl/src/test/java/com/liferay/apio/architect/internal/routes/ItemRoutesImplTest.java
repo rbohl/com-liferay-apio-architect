@@ -18,6 +18,7 @@ import static com.liferay.apio.architect.internal.action.Predicates.isRemoveActi
 import static com.liferay.apio.architect.internal.action.Predicates.isReplaceAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isRetrieveAction;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.FORM_BUILDER_FUNCTION;
+import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.FORM_BUILDER_SUPPLIER;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.GET_CUSTOM_ROUTE;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.HAS_REMOVE_PERMISSION_FUNCTION;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.HAS_UPDATE_PERMISSION_FUNCTION;
@@ -68,7 +69,8 @@ public class ItemRoutesImplTest {
 	@Before
 	public void setUp() {
 		_builder = new ItemRoutesImpl.BuilderImpl<>(
-			Resource.Item.of("name"), __ -> null, __ -> Optional.of("custom"));
+			Resource.Item.of("name"), FORM_BUILDER_SUPPLIER,
+			__ -> Optional.of("custom"));
 	}
 
 	@Test

@@ -19,7 +19,6 @@ import static com.liferay.apio.architect.internal.unsafe.Unsafe.unsafeCast;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
-import com.liferay.apio.architect.alias.IdentifierFunction;
 import com.liferay.apio.architect.alias.form.FormBuilderFunction;
 import com.liferay.apio.architect.alias.routes.BatchCreateItemFunction;
 import com.liferay.apio.architect.alias.routes.CreateItemFunction;
@@ -40,7 +39,6 @@ import com.liferay.apio.architect.function.throwable.ThrowableTriFunction;
 import com.liferay.apio.architect.identifier.Identifier;
 import com.liferay.apio.architect.internal.action.ActionSemantics;
 import com.liferay.apio.architect.internal.action.resource.Resource;
-import com.liferay.apio.architect.internal.form.FormImpl;
 import com.liferay.apio.architect.internal.pagination.PageImpl;
 import com.liferay.apio.architect.internal.single.model.SingleModelImpl;
 import com.liferay.apio.architect.pagination.Page;
@@ -48,7 +46,6 @@ import com.liferay.apio.architect.pagination.PageItems;
 import com.liferay.apio.architect.pagination.Pagination;
 import com.liferay.apio.architect.routes.CollectionRoutes;
 import com.liferay.apio.architect.single.model.SingleModel;
-import com.liferay.apio.architect.uri.Path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,12 +110,12 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 
 		public BuilderImpl(
 			Resource.Paged pagedResource,
-			Function<Path, ?> pathToIdentifierFunction,
+			Supplier<Form.Builder> formBuilderSupplier,
 			Function<T, S> modelToIdentifierFunction,
 			Function<String, Optional<String>> nameFunction) {
 
 			_pagedResource = pagedResource;
-			_pathToIdentifierFunction = pathToIdentifierFunction::apply;
+			_formBuilderSupplier = formBuilderSupplier;
 			_modelToIdentifierFunction = modelToIdentifierFunction;
 			_nameFunction = nameFunction;
 		}
@@ -149,9 +146,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			HasAddingPermissionFunction hasAddingPermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics batchCreateActionSemantics =
 				ActionSemantics.ofResource(
@@ -220,9 +215,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			HasAddingPermissionFunction hasAddingPermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics batchCreateActionSemantics =
 				ActionSemantics.ofResource(
@@ -300,9 +293,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			HasAddingPermissionFunction hasAddingPermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics batchCreateActionSemantics =
 				ActionSemantics.ofResource(
@@ -381,9 +372,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			HasAddingPermissionFunction hasAddingPermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics batchCreateActionSemantics =
 				ActionSemantics.ofResource(
@@ -461,9 +450,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			HasAddingPermissionFunction hasAddingPermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics batchCreateActionSemantics =
 				ActionSemantics.ofResource(
@@ -869,13 +856,12 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 			return new CollectionRoutesImpl<>(this);
 		}
 
+		@SuppressWarnings("unchecked")
 		private <R> Form<R> _getForm(
 			FormBuilderFunction<R> formBuilderFunction) {
 
 			if (formBuilderFunction != null) {
-				return formBuilderFunction.apply(
-					new FormImpl.BuilderImpl<>(
-						_pathToIdentifierFunction, _nameFunction));
+				return formBuilderFunction.apply(_formBuilderSupplier.get());
 			}
 
 			return null;
@@ -919,10 +905,10 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 
 		private final List<ActionSemantics> _actionSemantics =
 			new ArrayList<>();
+		private final Supplier<Form.Builder> _formBuilderSupplier;
 		private final Function<T, S> _modelToIdentifierFunction;
 		private final Function<String, Optional<String>> _nameFunction;
 		private final Resource.Paged _pagedResource;
-		private final IdentifierFunction<?> _pathToIdentifierFunction;
 
 	}
 

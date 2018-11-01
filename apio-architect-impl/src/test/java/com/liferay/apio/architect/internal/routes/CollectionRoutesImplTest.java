@@ -17,6 +17,7 @@ package com.liferay.apio.architect.internal.routes;
 import static com.liferay.apio.architect.internal.action.Predicates.isCreateAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isRetrieveAction;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.FORM_BUILDER_FUNCTION;
+import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.FORM_BUILDER_SUPPLIER;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.GET_CUSTOM_ROUTE;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.IDENTIFIER_FUNCTION;
 import static com.liferay.apio.architect.internal.routes.RoutesTestUtil.IS_BATCH_CREATE_ACTION;
@@ -72,8 +73,8 @@ public class CollectionRoutesImplTest {
 	@Before
 	public void setUp() {
 		_builder = new BuilderImpl<>(
-			Resource.Paged.of("name"),
-			__ -> null, IDENTIFIER_FUNCTION, __ -> Optional.of("custom"));
+			Resource.Paged.of("name"), FORM_BUILDER_SUPPLIER,
+			IDENTIFIER_FUNCTION, __ -> Optional.of("custom"));
 	}
 
 	@Test

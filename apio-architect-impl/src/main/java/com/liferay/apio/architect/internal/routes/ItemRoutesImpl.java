@@ -16,7 +16,6 @@ package com.liferay.apio.architect.internal.routes;
 
 import static com.liferay.apio.architect.internal.unsafe.Unsafe.unsafeCast;
 
-import com.liferay.apio.architect.alias.IdentifierFunction;
 import com.liferay.apio.architect.alias.form.FormBuilderFunction;
 import com.liferay.apio.architect.alias.routes.CustomItemFunction;
 import com.liferay.apio.architect.alias.routes.DeleteItemConsumer;
@@ -43,11 +42,9 @@ import com.liferay.apio.architect.function.throwable.ThrowableTriFunction;
 import com.liferay.apio.architect.identifier.Identifier;
 import com.liferay.apio.architect.internal.action.ActionSemantics;
 import com.liferay.apio.architect.internal.action.resource.Resource;
-import com.liferay.apio.architect.internal.form.FormImpl;
 import com.liferay.apio.architect.internal.single.model.SingleModelImpl;
 import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.single.model.SingleModel;
-import com.liferay.apio.architect.uri.Path;
 
 import io.vavr.CheckedRunnable;
 
@@ -121,11 +118,11 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 		public BuilderImpl(
 			Resource.Item itemResource,
-			Function<Path, ?> pathToIdentifierFunction,
+			Supplier<Form.Builder> formBuilderSupplier,
 			Function<String, Optional<String>> nameFunction) {
 
 			_itemResource = itemResource;
-			_pathToIdentifierFunction = pathToIdentifierFunction::apply;
+			_formBuilderSupplier = formBuilderSupplier;
 			_nameFunction = nameFunction;
 		}
 
@@ -604,9 +601,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			HasUpdatePermissionFunction<S> hasUpdatePermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
 				_itemResource
@@ -639,9 +634,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			HasUpdatePermissionFunction<S> hasUpdatePermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
 				_itemResource
@@ -676,9 +669,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			HasUpdatePermissionFunction<S> hasUpdatePermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
 				_itemResource
@@ -712,9 +703,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			HasUpdatePermissionFunction<S> hasUpdatePermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
 				_itemResource
@@ -747,9 +736,7 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			HasUpdatePermissionFunction<S> hasUpdatePermissionFunction,
 			FormBuilderFunction<R> formBuilderFunction) {
 
-			Form<R> form = formBuilderFunction.apply(
-				new FormImpl.BuilderImpl<>(
-					_pathToIdentifierFunction, _nameFunction));
+			Form<R> form = _getForm(formBuilderFunction);
 
 			ActionSemantics actionSemantics = ActionSemantics.ofResource(
 				_itemResource
@@ -780,13 +767,12 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 			return new ItemRoutesImpl<>(this);
 		}
 
+		@SuppressWarnings("unchecked")
 		private <R> Form<R> _getForm(
 			FormBuilderFunction<R> formBuilderFunction) {
 
 			if (formBuilderFunction != null) {
-				return formBuilderFunction.apply(
-					new FormImpl.BuilderImpl<>(
-						_pathToIdentifierFunction, _nameFunction));
+				return formBuilderFunction.apply(_formBuilderSupplier.get());
 			}
 
 			return null;
@@ -801,10 +787,10 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 		}
 
 		private <I extends Identifier<?>> String _getResourceName(
-			Class<I> supplier) {
+			Class<I> identifierClass) {
 
 			return _nameFunction.apply(
-				supplier.getName()
+				identifierClass.getName()
 			).orElse(
 				null
 			);
@@ -818,9 +804,9 @@ public class ItemRoutesImpl<T, S> implements ItemRoutes<T, S> {
 
 		private final List<ActionSemantics> _actionSemantics =
 			new ArrayList<>();
+		private final Supplier<Form.Builder> _formBuilderSupplier;
 		private final Resource.Item _itemResource;
 		private final Function<String, Optional<String>> _nameFunction;
-		private final IdentifierFunction<?> _pathToIdentifierFunction;
 
 	}
 
