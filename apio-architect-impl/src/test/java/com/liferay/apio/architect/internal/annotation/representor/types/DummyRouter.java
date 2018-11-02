@@ -16,7 +16,6 @@ package com.liferay.apio.architect.internal.annotation.representor.types;
 
 import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.annotation.Body;
-import com.liferay.apio.architect.annotation.EntryPoint;
 import com.liferay.apio.architect.annotation.Id;
 import com.liferay.apio.architect.annotation.ParentId;
 import com.liferay.apio.architect.annotation.Vocabulary;
@@ -60,8 +59,8 @@ public class DummyRouter implements ActionRouter<DummyRouter.DummyIdentifier> {
 		return new PageItems<>(dummyIdentifiers, dummyIdentifiers.size());
 	}
 
+	@Actions.EntryPoint
 	@Actions.Retrieve
-	@EntryPoint
 	public PageItems<DummyIdentifier> retrievePage(Pagination pagination) {
 		List<DummyIdentifier> dummyIdentifiers = Arrays.asList(() -> 0);
 

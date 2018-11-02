@@ -19,12 +19,12 @@ import static com.liferay.apio.architect.sample.internal.converter.BlogPostingCo
 import static com.liferay.apio.architect.sample.internal.converter.BlogSubscriptionConverter.toBlogSubscription;
 import static com.liferay.apio.architect.sample.internal.converter.ReviewConverter.toReviewModels;
 
+import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.annotation.Actions.Create;
 import com.liferay.apio.architect.annotation.Actions.Remove;
 import com.liferay.apio.architect.annotation.Actions.Replace;
 import com.liferay.apio.architect.annotation.Actions.Retrieve;
 import com.liferay.apio.architect.annotation.Body;
-import com.liferay.apio.architect.annotation.EntryPoint;
 import com.liferay.apio.architect.annotation.Id;
 import com.liferay.apio.architect.credentials.Credentials;
 import com.liferay.apio.architect.pagination.PageItems;
@@ -122,7 +122,7 @@ public class BlogPostingActionRouter implements ActionRouter<BlogPosting> {
 		);
 	}
 
-	@EntryPoint
+	@Actions.EntryPoint
 	@Retrieve
 	public PageItems<BlogPosting> retrievePage(Pagination pagination) {
 		List<BlogPostingModel> blogPostingModels =

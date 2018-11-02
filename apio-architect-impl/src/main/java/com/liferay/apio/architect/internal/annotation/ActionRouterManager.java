@@ -24,10 +24,10 @@ import static org.apache.commons.lang3.reflect.MethodUtils.getMethodsListWithAnn
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.annotation.Actions.Action;
 import com.liferay.apio.architect.annotation.Actions.Remove;
 import com.liferay.apio.architect.annotation.Actions.Retrieve;
-import com.liferay.apio.architect.annotation.EntryPoint;
 import com.liferay.apio.architect.annotation.Vocabulary.Type;
 import com.liferay.apio.architect.credentials.Credentials;
 import com.liferay.apio.architect.functional.Try;
@@ -131,7 +131,7 @@ public class ActionRouterManager extends ClassNameBaseManager<ActionRouter> {
 
 	private void _registerEntryPoint(ActionRouter actionRouter, String name) {
 		Stream<Method> stream = getMethodsListWithAnnotation(
-			actionRouter.getClass(), EntryPoint.class).stream();
+			actionRouter.getClass(), Actions.EntryPoint.class).stream();
 
 		stream.distinct(
 		).forEach(
