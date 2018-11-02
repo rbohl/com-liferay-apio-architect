@@ -25,6 +25,7 @@ import com.liferay.apio.architect.alias.routes.CreateItemFunction;
 import com.liferay.apio.architect.alias.routes.CustomPageFunction;
 import com.liferay.apio.architect.alias.routes.GetPageFunction;
 import com.liferay.apio.architect.alias.routes.permission.HasAddingPermissionFunction;
+import com.liferay.apio.architect.annotation.Actions.EntryPoint;
 import com.liferay.apio.architect.batch.BatchResult;
 import com.liferay.apio.architect.credentials.Credentials;
 import com.liferay.apio.architect.custom.actions.CustomRoute;
@@ -54,9 +55,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.immutables.value.Value;
+import org.immutables.value.Value.Include;
+
 /**
  * @author Alejandro Hernández
  */
+@Include(EntryPoint.class)
+@Value.Style(allParameters = true)
 public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 
 	public CollectionRoutesImpl(BuilderImpl<T, S> builderImpl) {
@@ -107,6 +113,9 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 	}
 
 	public static class BuilderImpl<T, S> implements Builder<T, S> {
+
+		public static final ImmutableEntryPoint ENTRY_POINT =
+			ImmutableEntryPoint.builder().build();
 
 		public BuilderImpl(
 			Resource.Paged pagedResource,
@@ -159,6 +168,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 					Body.class, aClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableBiFunction.andThen(
 						t -> new BatchResult<>(t, _pagedResource.name())
@@ -180,6 +190,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Body.class, aClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableBiFunction.andThen(
 					t -> new SingleModelImpl<>(
@@ -228,6 +239,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 					Body.class
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableFunction.andThen(
 						t -> new BatchResult<>(t, _pagedResource.name())
@@ -248,6 +260,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Body.class
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableFunction.andThen(
 					t -> new SingleModelImpl<>(
@@ -306,6 +319,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 					Body.class, aClass, bClass, cClass, dClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowablePentaFunction.andThen(
 						t -> new BatchResult<>(t, _pagedResource.name())
@@ -328,6 +342,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Body.class, aClass, bClass, cClass, dClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowablePentaFunction.andThen(
 					t -> new SingleModelImpl<>(
@@ -385,6 +400,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 					Body.class, aClass, bClass, cClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableTetraFunction.andThen(
 						t -> new BatchResult<>(t, _pagedResource.name())
@@ -407,6 +423,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Body.class, aClass, bClass, cClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableTetraFunction.andThen(
 					t -> new SingleModelImpl<>(
@@ -463,6 +480,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 					Body.class, aClass, bClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableTriFunction.andThen(
 						t -> new BatchResult<>(t, _pagedResource.name())
@@ -484,6 +502,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Body.class, aClass, bClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableTriFunction.andThen(
 					t -> new SingleModelImpl<>(
@@ -521,6 +540,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, bodyClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> throwableBiFunction.andThen(
 					t -> new SingleModelImpl<>(t, _getResourceName(supplier))
@@ -560,6 +580,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, bodyClass, aClass, bClass, cClass, dClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> throwableHexaFunction.andThen(
 					t -> new SingleModelImpl<>(t, _getResourceName(supplier))
@@ -601,6 +622,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, bodyClass, aClass, bClass, cClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> throwablePentaFunction.andThen(
 					t -> new SingleModelImpl<>(t, _getResourceName(supplier))
@@ -640,6 +662,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, bodyClass, aClass, bClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> throwableTetraFunction.andThen(
 					t -> new SingleModelImpl<>(t, _getResourceName(supplier))
@@ -677,6 +700,7 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, bodyClass, aClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> throwableTriFunction.andThen(
 					t -> new SingleModelImpl<>(t, _getResourceName(supplier))
@@ -708,6 +732,8 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, aClass
 			).returns(
 				Page.class
+			).annotatedWith(
+				ENTRY_POINT
 			).executeFunction(
 				params -> getterThrowableBiFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -738,6 +764,8 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class
 			).returns(
 				Page.class
+			).annotatedWith(
+				ENTRY_POINT
 			).executeFunction(
 				params -> getterThrowableFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -770,6 +798,8 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, aClass, bClass, cClass, dClass
 			).returns(
 				Page.class
+			).annotatedWith(
+				ENTRY_POINT
 			).executeFunction(
 				params -> getterThrowablePentaFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -803,6 +833,8 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, aClass, bClass, cClass
 			).returns(
 				Page.class
+			).annotatedWith(
+				ENTRY_POINT
 			).executeFunction(
 				params -> getterThrowableTetraFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -835,6 +867,8 @@ public class CollectionRoutesImpl<T, S> implements CollectionRoutes<T, S> {
 				Pagination.class, aClass, bClass
 			).returns(
 				Page.class
+			).annotatedWith(
+				ENTRY_POINT
 			).executeFunction(
 				params -> getterThrowableTriFunction.andThen(
 					pageItems -> new PageImpl<>(

@@ -38,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
 import com.liferay.apio.architect.annotation.ParentId;
@@ -346,6 +347,7 @@ public class NestedCollectionRoutesImplTest {
 			is(Resource.Nested.of("parent", "name")));
 		assertThat(
 			actionSemantics.returnClass(), is(equalTo(BatchResult.class)));
+		assertThat(actionSemantics.annotations(), hasSize(0));
 
 		CheckedFunction1<List<?>, ?> executeFunction =
 			actionSemantics.executeFunction();
@@ -370,6 +372,7 @@ public class NestedCollectionRoutesImplTest {
 			is(Resource.Nested.of("parent", "name")));
 		assertThat(
 			actionSemantics.returnClass(), is(equalTo(SingleModel.class)));
+		assertThat(actionSemantics.annotations(), hasSize(0));
 
 		CheckedFunction1<List<?>, ?> executeFunction =
 			actionSemantics.executeFunction();
@@ -395,6 +398,7 @@ public class NestedCollectionRoutesImplTest {
 			actionSemantics.resource(),
 			is(Resource.Nested.of("parent", "name")));
 		assertThat(actionSemantics.returnClass(), is(equalTo(Page.class)));
+		assertThat(actionSemantics.annotations(), hasSize(0));
 
 		CheckedFunction1<List<?>, ?> executeFunction =
 			actionSemantics.executeFunction();

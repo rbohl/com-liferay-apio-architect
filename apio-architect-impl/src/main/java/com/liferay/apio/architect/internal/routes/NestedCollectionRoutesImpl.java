@@ -147,6 +147,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 					ParentId.class, Body.class
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableBiFunction.andThen(
 						t -> new BatchResult<>(t, nestedName)
@@ -168,6 +169,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				ParentId.class, Body.class
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableBiFunction.andThen(
 					t -> new SingleModelImpl<>(t, nestedName, emptyList())
@@ -229,6 +231,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 					ParentId.class, Body.class, aClass, bClass, cClass, dClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableHexaFunction.andThen(
 						t -> new BatchResult<>(t, nestedName)
@@ -252,6 +255,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				ParentId.class, Body.class, aClass, bClass, cClass, dClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableHexaFunction.andThen(
 					t -> new SingleModelImpl<>(t, nestedName, emptyList())
@@ -315,6 +319,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 					ParentId.class, Body.class, aClass, bClass, cClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowablePentaFunction.andThen(
 						t -> new BatchResult<>(t, nestedName)
@@ -338,6 +343,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				ParentId.class, Body.class, aClass, bClass, cClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowablePentaFunction.andThen(
 					t -> new SingleModelImpl<>(t, nestedName, emptyList())
@@ -398,6 +404,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 					ParentId.class, Body.class, aClass, bClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableTetraFunction.andThen(
 						t -> new BatchResult<>(t, nestedName)
@@ -420,6 +427,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				ParentId.class, Body.class, aClass, bClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableTetraFunction.andThen(
 					t -> new SingleModelImpl<>(t, nestedName, emptyList())
@@ -478,6 +486,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 					ParentId.class, Body.class, aClass
 				).returns(
 					BatchResult.class
+				).notAnnotated(
 				).executeFunction(
 					params -> batchCreatorThrowableTriFunction.andThen(
 						t -> new BatchResult<>(t, nestedName)
@@ -500,6 +509,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				ParentId.class, Body.class, aClass
 			).returns(
 				SingleModel.class
+			).notAnnotated(
 			).executeFunction(
 				params -> creatorThrowableTriFunction.andThen(
 					t -> new SingleModelImpl<>(t, nestedName, emptyList())
@@ -529,6 +539,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				Pagination.class, ParentId.class
 			).returns(
 				Page.class
+			).notAnnotated(
 			).executeFunction(
 				params -> getterThrowableBiFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -561,6 +572,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				Pagination.class, ParentId.class, aClass, bClass, cClass, dClass
 			).returns(
 				Page.class
+			).notAnnotated(
 			).executeFunction(
 				params -> getterThrowableHexaFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -594,6 +606,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				Pagination.class, ParentId.class, aClass, bClass, cClass
 			).returns(
 				Page.class
+			).notAnnotated(
 			).executeFunction(
 				params -> getterThrowablePentaFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -627,6 +640,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				Pagination.class, ParentId.class, aClass, bClass
 			).returns(
 				Page.class
+			).notAnnotated(
 			).executeFunction(
 				params -> getterThrowableTetraFunction.andThen(
 					pageItems -> new PageImpl<>(
@@ -659,6 +673,7 @@ public class NestedCollectionRoutesImpl<T, S, U>
 				Pagination.class, ParentId.class, aClass
 			).returns(
 				Page.class
+			).notAnnotated(
 			).executeFunction(
 				params -> getterThrowableTriFunction.andThen(
 					pageItems -> new PageImpl<>(
