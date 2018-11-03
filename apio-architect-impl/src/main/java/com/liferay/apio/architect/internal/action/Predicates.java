@@ -16,7 +16,9 @@ package com.liferay.apio.architect.internal.action;
 
 import static java.util.Arrays.asList;
 
+import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.internal.action.resource.Resource;
+import com.liferay.apio.architect.pagination.Page;
 
 import java.lang.annotation.Annotation;
 
@@ -105,6 +107,20 @@ public class Predicates {
 	 */
 	public static final Predicate<ActionSemantics> isRetrieveAction =
 		isActionByGET.and(isActionNamed("retrieve"));
+
+	/**
+	 * Checks if an action is a root collection action.
+	 *
+	 * @review
+	 */
+	public static final Predicate<ActionSemantics> isRootCollectionAction =
+		isRetrieveAction.and(
+			returnsAnyOf(Page.class)
+		).and(
+			hasAnnotation(Actions.EntryPoint.class)
+		).and(
+			isActionFor(Resource.Paged.class)
+		);
 
 	/**
 	 * Transforms the object under testing with the provided function and checks

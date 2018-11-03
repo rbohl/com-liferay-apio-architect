@@ -26,6 +26,7 @@ import static com.liferay.apio.architect.internal.action.Predicates.isCreateActi
 import static com.liferay.apio.architect.internal.action.Predicates.isRemoveAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isReplaceAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isRetrieveAction;
+import static com.liferay.apio.architect.internal.action.Predicates.isRootCollectionAction;
 import static com.liferay.apio.architect.internal.action.Predicates.returnsAnyOf;
 
 import static java.util.Collections.singletonList;
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertTrue;
 import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.annotation.Actions.EntryPoint;
 import com.liferay.apio.architect.internal.action.resource.Resource;
+import com.liferay.apio.architect.pagination.Page;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -155,11 +157,17 @@ public class PredicatesTest {
 	}
 
 	@Test
+	public void testIsRootCollectionAction() {
+		assertTrue(isRootCollectionAction.test(_withAction("GET", "retrieve")));
+		assertFalse(isRootCollectionAction.test(_actionSemantics));
+	}
+
+	@Test
 	public void testReturnsAnyOf() {
 		Predicate<ActionSemantics> truePredicate = returnsAnyOf(
-			String.class, Long.class);
+			String.class, Page.class);
 		Predicate<ActionSemantics> anotherTruePredicate = returnsAnyOf(
-			Character.class, Long.class);
+			Character.class, Page.class);
 		Predicate<ActionSemantics> falsePredicate = returnsAnyOf(Void.class);
 
 		assertTrue(truePredicate.test(_actionSemantics));
@@ -167,18 +175,15 @@ public class PredicatesTest {
 		assertFalse(falsePredicate.test(_actionSemantics));
 	}
 
-	private static ActionSemantics _withAction(String method, String action) {
-		ImmutableActionSemantics immutableActionSemantics =
-			(ImmutableActionSemantics)_actionSemantics;
+	private static ImmutableActionSemantics _withAction(
+		String method, String action) {
 
-		return immutableActionSemantics.withMethod(
-			method
-		).withName(
-			action
-		);
+		ImmutableActionSemantics immutableActionSemantics = _withMethod(method);
+
+		return immutableActionSemantics.withName(action);
 	}
 
-	private static ActionSemantics _withMethod(String method) {
+	private static ImmutableActionSemantics _withMethod(String method) {
 		ImmutableActionSemantics immutableActionSemantics =
 			(ImmutableActionSemantics)_actionSemantics;
 
@@ -195,7 +200,7 @@ public class PredicatesTest {
 		).receivesParams(
 			String.class, Integer.class
 		).returns(
-			Long.class
+			Page.class
 		).annotatedWith(
 			ImmutableEntryPoint.builder().build()
 		).executeFunction(
