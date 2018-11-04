@@ -111,13 +111,35 @@ public abstract class Resource {
 
 		/**
 		 * Creates a new {@link Nested} with the provided {@code parent}-{@code
+		 * nested} name pair and parent ID.
+		 *
+		 * @review
+		 */
+		public static Nested of(
+			String parentName, Object parentId, String name) {
+
+			return ImmutableNested.of(parentName, name, Optional.of(parentId));
+		}
+
+		/**
+		 * Creates a new {@link Nested} with the provided {@code parent}-{@code
 		 * nested} name pair.
 		 *
 		 * @review
 		 */
 		public static Nested of(String parentName, String name) {
-			return ImmutableNested.of(parentName, name);
+			return ImmutableNested.of(parentName, name, Optional.empty());
 		}
+
+		/**
+		 * The parent resource's ID. This component is not taken into account
+		 * when performing an {@link #equals(Object)} check.
+		 *
+		 * @review
+		 */
+		@Auxiliary
+		@Parameter(order = 2)
+		public abstract Optional<Object> id();
 
 		/**
 		 * The resource's name

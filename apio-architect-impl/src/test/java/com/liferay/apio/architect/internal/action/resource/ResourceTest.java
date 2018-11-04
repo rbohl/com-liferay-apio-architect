@@ -56,6 +56,17 @@ public class ResourceTest {
 	}
 
 	@Test
+	public void testNestedOfWithIdCreatesValidResourceNested() {
+		Resource.Nested nestedResource = Resource.Nested.of(
+			"parent", 42L, "name");
+
+		assertThat(nestedResource.name(), is("name"));
+		assertThat(nestedResource.parentName(), is("parent"));
+		assertThat(nestedResource.id(), is(optionalWithValue(equalTo(42L))));
+		assertEquals(nestedResource, Resource.Nested.of("parent", "name"));
+	}
+
+	@Test
 	public void testPagedOfCreatesValidResourcePaged() {
 		Resource.Paged pagedResource = Resource.Paged.of("name");
 
