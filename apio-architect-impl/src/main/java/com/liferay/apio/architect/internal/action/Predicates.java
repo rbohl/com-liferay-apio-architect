@@ -19,7 +19,6 @@ import static java.util.Arrays.asList;
 import com.liferay.apio.architect.annotation.Actions;
 import com.liferay.apio.architect.internal.action.resource.Resource;
 import com.liferay.apio.architect.pagination.Page;
-import com.liferay.apio.architect.single.model.SingleModel;
 
 import java.lang.annotation.Annotation;
 
@@ -46,32 +45,32 @@ public class Predicates {
 	 *
 	 * @review
 	 */
-	public static final Predicate<ActionSemantics> isActionByDELETE = areEquals(
-		ActionSemantics::method, "DELETE");
+	public static final Predicate<ActionSemantics> isActionByDELETE =
+		isActionBy("DELETE");
 
 	/**
 	 * Checks if an action's method is {@code GET}.
 	 *
 	 * @review
 	 */
-	public static final Predicate<ActionSemantics> isActionByGET = areEquals(
-		ActionSemantics::method, "GET");
+	public static final Predicate<ActionSemantics> isActionByGET = isActionBy(
+		"GET");
 
 	/**
 	 * Checks if an action's method is {@code POST}.
 	 *
 	 * @review
 	 */
-	public static final Predicate<ActionSemantics> isActionByPOST = areEquals(
-		ActionSemantics::method, "POST");
+	public static final Predicate<ActionSemantics> isActionByPOST = isActionBy(
+		"POST");
 
 	/**
 	 * Checks if an action's method is {@code PUT}.
 	 *
 	 * @review
 	 */
-	public static final Predicate<ActionSemantics> isActionByPUT = areEquals(
-		ActionSemantics::method, "PUT");
+	public static final Predicate<ActionSemantics> isActionByPUT = isActionBy(
+		"PUT");
 
 	/**
 	 * Checks if an action's method is {@code POST} and its name is {@code
@@ -124,18 +123,6 @@ public class Predicates {
 		);
 
 	/**
-	 * Checks if an action is a root create action.
-	 *
-	 * @review
-	 */
-	public static final Predicate<ActionSemantics> isRootCreateAction =
-		isCreateAction.and(
-			returnsAnyOf(SingleModel.class)
-		).and(
-			isActionFor(Resource.Paged.class)
-		);
-
-	/**
 	 * Transforms the object under testing with the provided function and checks
 	 * equality between the result and the provided object.
 	 *
@@ -172,6 +159,15 @@ public class Predicates {
 		).anyMatch(
 			annotation::isAssignableFrom
 		);
+	}
+
+	/**
+	 * Checks if an action's method is the one provided.
+	 *
+	 * @review
+	 */
+	public static Predicate<ActionSemantics> isActionBy(String method) {
+		return areEquals(ActionSemantics::method, method);
 	}
 
 	/**
