@@ -18,21 +18,21 @@ import static java.util.Collections.singletonList;
 
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 
-import com.liferay.apio.architect.functional.Try;
 import com.liferay.apio.architect.identifier.Identifier;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
+import com.liferay.apio.architect.internal.annotation.ActionManager;
 import com.liferay.apio.architect.internal.message.json.MessageMapper;
 import com.liferay.apio.architect.internal.request.RequestInfo;
 import com.liferay.apio.architect.internal.response.control.Embedded;
 import com.liferay.apio.architect.internal.response.control.Fields;
-import com.liferay.apio.architect.internal.unsafe.Unsafe;
 import com.liferay.apio.architect.internal.url.ApplicationURL;
 import com.liferay.apio.architect.internal.url.ServerURL;
 import com.liferay.apio.architect.internal.wiring.osgi.manager.provider.ProviderManager;
 import com.liferay.apio.architect.internal.wiring.osgi.manager.representable.NameManager;
-import com.liferay.apio.architect.internal.wiring.osgi.manager.router.ItemRouterManager;
 import com.liferay.apio.architect.language.AcceptLanguage;
-import com.liferay.apio.architect.routes.ItemRoutes;
 import com.liferay.apio.architect.single.model.SingleModel;
+
+import io.vavr.control.Option;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -167,25 +167,13 @@ public abstract class BaseMessageBodyWriter<T, S extends MessageMapper>
 	protected Optional<SingleModel> getSingleModelOptional(
 		Object identifier, Class<? extends Identifier> identifierClass) {
 
-		return Try.success(
-			identifierClass.getName()
-		).mapOptional(
-			nameManager::getNameOptional
-		).mapOptional(
-			itemRouterManager::getItemRoutesOptional
-		).mapOptional(
-			ItemRoutes::getItemFunctionOptional
+		return Option.ofOptional(
+			nameManager.getNameOptional(identifierClass.getName())
 		).map(
-			function -> function.apply(_httpServletRequest)
+			name -> Item.of(name, identifier)
 		).flatMap(
-			function -> function.apply(identifier)
-		).<SingleModel>map(
-			Unsafe::unsafeCast
-		).map(
-			Optional::of
-		).orElseGet(
-			Optional::empty
-		);
+			item -> actionManager.getItemSingleModel(item, _httpServletRequest)
+		).toJavaOptional();
 	}
 
 	/**
@@ -200,7 +188,7 @@ public abstract class BaseMessageBodyWriter<T, S extends MessageMapper>
 	protected abstract String write(T t, S s, RequestInfo requestInfo);
 
 	@Reference
-	protected ItemRouterManager itemRouterManager;
+	protected ActionManager actionManager;
 
 	@Reference
 	protected NameManager nameManager;
