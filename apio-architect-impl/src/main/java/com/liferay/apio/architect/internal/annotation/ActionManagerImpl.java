@@ -34,6 +34,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
 
 import com.liferay.apio.architect.annotation.Id;
+import com.liferay.apio.architect.annotation.ParentId;
 import com.liferay.apio.architect.credentials.Credentials;
 import com.liferay.apio.architect.documentation.APIDescription;
 import com.liferay.apio.architect.documentation.APITitle;
@@ -41,6 +42,7 @@ import com.liferay.apio.architect.form.Body;
 import com.liferay.apio.architect.internal.action.ActionSemantics;
 import com.liferay.apio.architect.internal.action.resource.Resource;
 import com.liferay.apio.architect.internal.action.resource.Resource.Item;
+import com.liferay.apio.architect.internal.action.resource.Resource.Nested;
 import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.annotation.Action.Error.NotFound;
 import com.liferay.apio.architect.internal.documentation.Documentation;
@@ -176,22 +178,37 @@ public class ActionManagerImpl implements ActionManager {
 		}
 
 		if (params.size() == 3) {
-			Item item = Item.of(
-				params.get(0), _getId(params.get(0), params.get(1)));
+			Object id = _getId(params.get(0), params.get(1));
 
-			return Either.narrow(
+			Item item = Item.of(params.get(0), id);
+
+			Either<Action.Error, Action> either = Either.narrow(
 				_getBinaryFileAction(item, params.get(2))
 			).orElse(
 				() -> _getAction(item, isAction(params.get(2), method))
 			);
+
+			if (either.isRight()) {
+				return either;
+			}
+
+			Nested nested = Nested.of(params.get(0), id, params.get(2));
+
+			if (method.equals("GET")) {
+				return _getAction(nested, isRetrieveAction);
+			}
+
+			if (method.equals("POST")) {
+				return _getAction(nested, isCreateAction);
+			}
 		}
 
 		if (params.size() == 4) {
-			ActionKey actionKey = new ActionKey(
-				method, params.get(0), params.get(1), params.get(2),
-				params.get(3));
+			Object id = _getId(params.get(0), params.get(1));
 
-			return _getActionsWithId(actionKey);
+			Nested nested = Nested.of(params.get(0), id, params.get(2));
+
+			return _getAction(nested, isAction(params.get(3), method));
 		}
 
 		return Either.left(_notFound);
@@ -517,6 +534,20 @@ public class ActionManagerImpl implements ActionManager {
 				Item.class::cast
 			).flatMap(
 				item -> Option.ofOptional(item.id())
+			).getOrElseThrow(
+				NotFoundException::new
+			);
+		}
+
+		if (clazz.equals(ParentId.class)) {
+			return Option.of(
+				actionSemantics.resource()
+			).filter(
+				instanceOf(Nested.class)
+			).map(
+				Nested.class::cast
+			).flatMap(
+				nested -> Option.ofOptional(nested.id())
 			).getOrElseThrow(
 				NotFoundException::new
 			);
