@@ -15,12 +15,17 @@
 package com.liferay.apio.architect.internal.annotation;
 
 import static com.liferay.apio.architect.internal.action.Predicates.isActionBy;
+import static com.liferay.apio.architect.internal.action.Predicates.isActionNamed;
+import static com.liferay.apio.architect.internal.action.Predicates.isCreateAction;
+import static com.liferay.apio.architect.internal.action.Predicates.isRemoveAction;
+import static com.liferay.apio.architect.internal.action.Predicates.isReplaceAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isRetrieveAction;
 import static com.liferay.apio.architect.internal.action.Predicates.isRootCollectionAction;
 import static com.liferay.apio.architect.internal.action.converter.EntryPointConverter.getEntryPointFrom;
 import static com.liferay.apio.architect.internal.body.JSONToBodyConverter.jsonToBody;
 import static com.liferay.apio.architect.internal.body.MultipartToBodyConverter.multipartToBody;
 
+import static io.vavr.Predicates.instanceOf;
 import static io.vavr.control.Either.right;
 
 import static java.util.function.Function.identity;
@@ -29,12 +34,14 @@ import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
 
+import com.liferay.apio.architect.annotation.Id;
 import com.liferay.apio.architect.credentials.Credentials;
 import com.liferay.apio.architect.documentation.APIDescription;
 import com.liferay.apio.architect.documentation.APITitle;
 import com.liferay.apio.architect.form.Body;
 import com.liferay.apio.architect.internal.action.ActionSemantics;
 import com.liferay.apio.architect.internal.action.resource.Resource;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
 import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.annotation.Action.Error.NotFound;
 import com.liferay.apio.architect.internal.documentation.Documentation;
@@ -52,6 +59,7 @@ import com.liferay.apio.architect.uri.Path;
 
 import io.vavr.CheckedFunction3;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 
 import java.util.Collections;
@@ -151,7 +159,20 @@ public class ActionManagerImpl implements ActionManager {
 				return pagedCustomActionEither;
 			}
 
-			return _getActionsWithId(actionKey);
+			Item item = Item.of(
+				params.get(0), _getId(params.get(0), params.get(1)));
+
+			if (method.equals("DELETE")) {
+				return _getAction(item, isRemoveAction);
+			}
+
+			if (method.equals("PUT")) {
+				return _getAction(item, isReplaceAction);
+			}
+
+			if (method.equals("GET")) {
+				return _getAction(item, isRetrieveAction);
+			}
 		}
 
 		if (params.size() == 3) {
@@ -277,6 +298,8 @@ public class ActionManagerImpl implements ActionManager {
 		).withPredicate(
 			predicate
 		).map(
+			actionSemantics -> actionSemantics.withResource(resource)
+		).map(
 			actionSemantics -> actionSemantics.toAction(this::_provide)
 		).<Either<Action.Error, Action>>map(
 			Either::right
@@ -328,6 +351,17 @@ public class ActionManagerImpl implements ActionManager {
 		catch (Error e) {
 			return null;
 		}
+	}
+
+	@SuppressWarnings("Convert2MethodRef")
+	private Object _getId(String name, String id) {
+		return Try.success(
+			new Path(name, id)
+		).mapTry(
+			pathIdentifierMapperManager::mapToIdentifierOrFail
+		).getOrElseThrow(
+			t -> new NotFoundException(t)
+		);
 	}
 
 	private List<Object> _getProvidedObjects(
@@ -426,6 +460,20 @@ public class ActionManagerImpl implements ActionManager {
 
 		if (clazz.equals(Body.class)) {
 			return _getBody(request);
+		}
+
+		if (clazz.equals(Id.class)) {
+			return Option.of(
+				actionSemantics.resource()
+			).filter(
+				instanceOf(Item.class)
+			).map(
+				Item.class::cast
+			).flatMap(
+				item -> Option.ofOptional(item.id())
+			).getOrElseThrow(
+				NotFoundException::new
+			);
 		}
 
 		return providerManager.provideMandatory(request, clazz);
