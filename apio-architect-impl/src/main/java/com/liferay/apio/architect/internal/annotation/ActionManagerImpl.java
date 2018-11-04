@@ -178,14 +178,12 @@ public class ActionManagerImpl implements ActionManager {
 		if (params.size() == 3) {
 			Item item = Item.of(
 				params.get(0), _getId(params.get(0), params.get(1)));
-			String actionName = params.get(2);
 
-			Either<Action.Error, Action> itemCustomActionEither = _getAction(
-				item, isAction(actionName, method));
-
-			if (itemCustomActionEither.isRight()) {
-				return itemCustomActionEither;
-			}
+			return Either.narrow(
+				_getBinaryFileAction(item, params.get(2))
+			).orElse(
+				() -> _getAction(item, isAction(params.get(2), method))
+			);
 		}
 
 		if (params.size() == 4) {
@@ -349,6 +347,29 @@ public class ActionManagerImpl implements ActionManager {
 		Object id = _getId(actionKey.getPath());
 
 		return right(_getAction(actionKey, id));
+	}
+
+	private Either<Action.Error, Action> _getBinaryFileAction(
+		Item item, String binaryId) {
+
+		return Option.ofOptional(
+			_representableManager.getRepresentorOptional(item.name())
+		).flatMap(
+			representor -> Option.ofOptional(
+				representor.getBinaryFunction(binaryId))
+		).<Action.Error>toEither(
+			() -> _notFound
+		).map(
+			function -> request -> Option.narrow(
+				getItemSingleModel(item, request)
+			).map(
+				SingleModel::getModel
+			).map(
+				function
+			).getOrElseThrow(
+				NotFoundException::new
+			)
+		);
 	}
 
 	private Object _getBody(HttpServletRequest request) {
