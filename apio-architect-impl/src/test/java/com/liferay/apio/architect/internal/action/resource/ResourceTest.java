@@ -14,7 +14,10 @@
 
 package com.liferay.apio.architect.internal.action.resource;
 
+import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
 import static org.junit.Assert.assertEquals;
@@ -31,6 +34,15 @@ public class ResourceTest {
 		Resource.Item itemResource = Resource.Item.of("name");
 
 		assertThat(itemResource.name(), is("name"));
+		assertEquals(itemResource, Resource.Item.of("name"));
+	}
+
+	@Test
+	public void testItemOfWithIdCreatesValidResourceItem() {
+		Resource.Item itemResource = Resource.Item.of("name", 42L);
+
+		assertThat(itemResource.name(), is("name"));
+		assertThat(itemResource.id(), is(optionalWithValue(equalTo(42L))));
 		assertEquals(itemResource, Resource.Item.of("name"));
 	}
 

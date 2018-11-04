@@ -16,6 +16,9 @@ package com.liferay.apio.architect.internal.action.resource;
 
 import static org.immutables.value.Value.Style.ImplementationVisibility.PACKAGE;
 
+import java.util.Optional;
+
+import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 import org.immutables.value.Value.Style;
@@ -60,14 +63,35 @@ public abstract class Resource {
 		 * @review
 		 */
 		public static Item of(String name) {
-			return ImmutableItem.of(name);
+			return ImmutableItem.of(name, Optional.empty());
 		}
+
+		/**
+		 * Creates a new {@link Item} with the provided {@code name} and {@code
+		 * ID}.
+		 *
+		 * @review
+		 */
+		public static Item of(String name, Object id) {
+			return ImmutableItem.of(name, Optional.of(id));
+		}
+
+		/**
+		 * The resource's ID. This component is not taken into account when
+		 * performing an {@link #equals(Object)} check.
+		 *
+		 * @review
+		 */
+		@Auxiliary
+		@Parameter(order = 1)
+		public abstract Optional<Object> id();
 
 		/**
 		 * The resource's name
 		 *
 		 * @review
 		 */
+		@Parameter(order = 0)
 		public abstract String name();
 
 	}
