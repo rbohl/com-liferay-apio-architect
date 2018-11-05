@@ -23,6 +23,38 @@
 	"entrypoint": "Entrypoint",
 	"supportedClass": [
 		{
+			"@id": "vocab:Type 1Collection",
+			"@type": "Class",
+			"description": "A collection of Type 1",
+			"subClassOf": "Collection",
+			"supportedOperation": [
+				{
+					"@id": "_:root/retrieve",
+					"@type": [
+						"Operation"
+					],
+					"comment": "retrieve description",
+					"method": "GET",
+					"returns": "Collection"
+				}
+			],
+			"supportedProperty": [
+				{
+					"@type": "SupportedProperty",
+					"property": "totalItems"
+				},
+				{
+					"@type": "SupportedProperty",
+					"property": "member"
+				},
+				{
+					"@type": "SupportedProperty",
+					"property": "numberOfItems"
+				}
+			],
+			"title": "Type 1Collection"
+		},
+		{
 			"@id": "Type 1",
 			"@type": "Class",
 			"supportedOperation": [
@@ -36,13 +68,22 @@
 					"returns": "Type 1"
 				},
 				{
-					"@id": "_:root/delete",
+					"@id": "_:root/remove",
 					"@type": [
 						"DeleteAction",
 						"Operation"
 					],
 					"method": "DELETE",
 					"returns": "http://www.w3.org/2002/07/owl#Nothing"
+				},
+				{
+					"@id": "_:root/replace",
+					"@type": [
+						"ReplaceAction",
+						"Operation"
+					],
+					"method": "PUT",
+					"returns": "Type 1"
 				}
 			],
 			"supportedProperty": [
@@ -185,234 +226,6 @@
 				}
 			],
 			"title": "Type 1"
-		},
-		{
-			"@id": "Type 2",
-			"@type": "Class",
-			"supportedOperation": [
-				{
-					"@id": "_:root/retrieve",
-					"@type": [
-						"Operation"
-					],
-					"comment": "retrieve description",
-					"method": "GET",
-					"returns": "Type 2"
-				},
-				{
-					"@id": "_:root/delete",
-					"@type": [
-						"DeleteAction",
-						"Operation"
-					],
-					"method": "DELETE",
-					"returns": "http://www.w3.org/2002/07/owl#Nothing"
-				}
-			],
-			"supportedProperty": [
-				{
-					"@type": "SupportedProperty",
-					"property": "applicationRelativeURL1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"comment": "binary description",
-					"property": "binary1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "binary2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "boolean1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "boolean2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "booleanList1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "booleanList2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "link1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "link2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "localizedString1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "localizedString2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "nested1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "nested2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "number1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "number2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "numberList1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "numberList2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "relativeURL1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "relativeURL2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "relativeURL3"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "date1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "date2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "string1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "string2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "stringList1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "stringList2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "embedded1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "embedded2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "linked1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "linked2"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "nested3"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "linked3"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "relatedCollection1"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "relatedCollection2"
-				}
-			],
-			"title": "Type 2"
-		},
-		{
-			"@id": "vocab:Type 1Collection",
-			"@type": "Class",
-			"description": "A collection of Type 1",
-			"subClassOf": "Collection",
-			"supportedOperation": [
-				{
-					"@id": "_:root/retrieve",
-					"@type": [
-						"Operation"
-					],
-					"comment": "retrieve description",
-					"method": "GET",
-					"returns": "Collection"
-				}
-			],
-			"supportedProperty": [
-				{
-					"@type": "SupportedProperty",
-					"property": "totalItems"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "member"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "numberOfItems"
-				}
-			],
-			"title": "Type 1Collection"
-		},
-		{
-			"@id": "vocab:Type 2Collection",
-			"@type": "Class",
-			"description": "A collection of Type 2",
-			"subClassOf": "Collection",
-			"supportedOperation": [
-				{
-					"@id": "_:root/retrieve",
-					"@type": [
-						"Operation"
-					],
-					"comment": "retrieve description",
-					"method": "GET",
-					"returns": "Collection"
-				}
-			],
-			"supportedProperty": [
-				{
-					"@type": "SupportedProperty",
-					"property": "totalItems"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "member"
-				},
-				{
-					"@type": "SupportedProperty",
-					"property": "numberOfItems"
-				}
-			],
-			"title": "Type 2Collection"
 		}
 	],
 	"title": "Title"

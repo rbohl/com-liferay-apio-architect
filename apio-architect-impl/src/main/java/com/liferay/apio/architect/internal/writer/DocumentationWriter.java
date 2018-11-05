@@ -18,8 +18,11 @@ import com.liferay.apio.architect.alias.representor.FieldFunction;
 import com.liferay.apio.architect.alias.representor.NestedFieldFunction;
 import com.liferay.apio.architect.consumer.TriConsumer;
 import com.liferay.apio.architect.documentation.contributor.CustomDocumentation;
-import com.liferay.apio.architect.internal.annotation.Action;
-import com.liferay.apio.architect.internal.annotation.ActionKey;
+import com.liferay.apio.architect.identifier.Identifier;
+import com.liferay.apio.architect.internal.action.ActionSemantics;
+import com.liferay.apio.architect.internal.action.resource.Resource;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
+import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.documentation.Documentation;
 import com.liferay.apio.architect.internal.message.json.DocumentationMessageMapper;
 import com.liferay.apio.architect.internal.message.json.JSONObjectBuilder;
@@ -34,10 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -75,6 +77,14 @@ public class DocumentationWriter {
 	 * @return the JSON representation of the {@code Documentation}
 	 */
 	public String write() {
+		Function<Resource, String> nameFunction = resource -> {
+			if (resource instanceof Paged) {
+				return ((Paged)resource).name();
+			}
+
+			return ((Item)resource).name();
+		};
+
 		JSONObjectBuilder jsonObjectBuilder = new JSONObjectBuilder();
 
 		_writeDocumentationMetadata(jsonObjectBuilder);
@@ -82,35 +92,22 @@ public class DocumentationWriter {
 		Map<String, Representor> representors =
 			_documentation.getRepresentors();
 
-		Supplier<Set<ActionKey>> actionKeysSupplier =
-			_documentation.getActionKeysSupplier();
-
-		Set<ActionKey> actionKeys = actionKeysSupplier.get();
-
-		Stream<ActionKey> stream = actionKeys.stream();
-
-		Function<ActionKey, List<Action>> actionsFunction =
-			_documentation.getActionsFunction();
+		Stream<Resource> stream = _documentation.getResourceStream();
 
 		stream.filter(
-			actionKey -> representors.containsKey(actionKey.getResource())
-		).filter(
-			actionKey -> actionKey.isGetRequest() && !actionKey.isNested() &&
-			 !actionKey.isCustom()
+			resource -> resource instanceof Item || resource instanceof Paged
 		).forEach(
-			actionKey -> {
-				String name = actionKey.getResource();
+			resource -> {
+				String name = nameFunction.apply(resource);
 
 				Representor representor = representors.get(name);
 
 				_writeRoute(
-					jsonObjectBuilder, name, representor,
-					_getResourceMapperTriConsumer(actionKey),
-					(resource, type, resourceJsonObjectBuilder) ->
-						_writeOperations(
-							actionsFunction, resource, type, actionKey,
-							resourceJsonObjectBuilder),
-					_getWriteFieldsRepresentorConsumer(actionKey, representor));
+					jsonObjectBuilder, representor,
+					_getResourceMapperTriConsumer(resource),
+					(type, resourceJsonObjectBuilder) -> _writeOperations(
+						name, type, resource, resourceJsonObjectBuilder),
+					_getWriteFieldsRepresentorConsumer(resource, representor));
 			}
 		);
 
@@ -196,7 +193,7 @@ public class DocumentationWriter {
 	}
 
 	private Stream<String> _calculateNestableFieldNames(
-		BaseRepresentor representor) {
+		BaseRepresentor<?> representor) {
 
 		List<FieldFunction> fieldFunctions = new ArrayList<>();
 
@@ -218,9 +215,11 @@ public class DocumentationWriter {
 		Stream<String> fieldNamesStream = fieldFunctionStream.map(
 			FieldFunction::getKey);
 
-		List<RelatedModel> relatedModels = representor.getRelatedModels();
+		List<? extends RelatedModel<?, ?>> relatedModels =
+			representor.getRelatedModels();
 
-		Stream<RelatedModel> relatedModelStream = relatedModels.stream();
+		Stream<? extends RelatedModel<?, ?>> relatedModelStream =
+			relatedModels.stream();
 
 		Stream<String> relatedModelNamesStream = relatedModelStream.map(
 			RelatedModel::getKey);
@@ -228,10 +227,10 @@ public class DocumentationWriter {
 		fieldNamesStream = Stream.concat(
 			fieldNamesStream, relatedModelNamesStream);
 
-		List<NestedFieldFunction> nestedFieldFunctions =
+		List<? extends NestedFieldFunction<?, ?>> nestedFieldFunctions =
 			representor.getNestedFieldFunctions();
 
-		Stream<NestedFieldFunction> nestedFieldFunctionStream =
+		Stream<? extends NestedFieldFunction<?, ?>> nestedFieldFunctionStream =
 			nestedFieldFunctions.stream();
 
 		Stream<String> nestedFieldNamesStream = nestedFieldFunctionStream.map(
@@ -263,9 +262,9 @@ public class DocumentationWriter {
 	}
 
 	private TriConsumer<JSONObjectBuilder, String, String>
-		_getResourceMapperTriConsumer(ActionKey actionKey) {
+		_getResourceMapperTriConsumer(Resource resource) {
 
-		if (actionKey.isCollection()) {
+		if (resource instanceof Paged) {
 			return _documentationMessageMapper::mapResourceCollection;
 		}
 
@@ -273,9 +272,9 @@ public class DocumentationWriter {
 	}
 
 	private Consumer<JSONObjectBuilder> _getWriteFieldsRepresentorConsumer(
-		ActionKey actionKey, Representor representor) {
+		Resource resource, Representor representor) {
 
-		if (actionKey.isCollection()) {
+		if (resource instanceof Paged) {
 			return __ -> {
 			};
 		}
@@ -284,33 +283,32 @@ public class DocumentationWriter {
 			representor, resourceJsonObjectBuilder);
 	}
 
-	private void _writeAction(
-		Action action, JSONObjectBuilder jsonObjectBuilder, String resourceName,
-		String type) {
+	private void _writeActionSemantics(
+		ActionSemantics actionSemantics, JSONObjectBuilder jsonObjectBuilder,
+		String name, String type) {
 
 		JSONObjectBuilder operationJsonObjectBuilder = new JSONObjectBuilder();
 
-		ActionKey actionKey = action.getActionKey();
-
 		String customDocumentation = _getCustomDocumentation(
-			actionKey.getIdName());
+			name + "/" + actionSemantics.name());
 
 		_documentationMessageMapper.mapAction(
-			operationJsonObjectBuilder, resourceName, type, action,
+			operationJsonObjectBuilder, name, type, actionSemantics,
 			customDocumentation);
 
 		_documentationMessageMapper.onFinishAction(
-			jsonObjectBuilder, operationJsonObjectBuilder, action);
+			jsonObjectBuilder, operationJsonObjectBuilder, actionSemantics);
 	}
 
 	private void _writeAllFields(
-		Representor representor, JSONObjectBuilder resourceJsonObjectBuilder) {
+		Representor<?> representor,
+		JSONObjectBuilder resourceJsonObjectBuilder) {
 
 		Stream<String> fieldNamesStream = _calculateNestableFieldNames(
 			representor);
 
-		Stream<RelatedCollection> relatedCollections =
-			representor.getRelatedCollections();
+		Stream<? extends RelatedCollection<?, ? extends Identifier>>
+			relatedCollections = representor.getRelatedCollections();
 
 		Stream<String> relatedCollectionsNamesStream = relatedCollections.map(
 			RelatedCollection::getKey);
@@ -371,45 +369,41 @@ public class DocumentationWriter {
 	}
 
 	private void _writeOperations(
-		Function<ActionKey, List<Action>> actionManager, String resource,
-		String type, ActionKey actionKey,
+		String name, String type, Resource resource,
 		JSONObjectBuilder resourceJsonObjectBuilder) {
 
-		List<Action> actions = actionManager.apply(actionKey);
+		Function<Resource, Stream<ActionSemantics>> actionSemanticsFunction =
+			_documentation.getActionSemanticsFunction();
 
-		actions.forEach(
-			action -> _writeAction(
-				action, resourceJsonObjectBuilder, resource, type));
+		actionSemanticsFunction.apply(
+			resource
+		).forEach(
+			actionSemantics -> _writeActionSemantics(
+				actionSemantics, resourceJsonObjectBuilder, name, type)
+		);
 	}
 
 	private void _writeRoute(
-		JSONObjectBuilder jsonObjectBuilder, String name,
-		Representor representor,
+		JSONObjectBuilder jsonObjectBuilder, Representor<?> representor,
 		TriConsumer<JSONObjectBuilder, String, String> writeResourceTriConsumer,
-		TriConsumer<String, String, JSONObjectBuilder>
-			writeOperationsTriConsumer,
+		BiConsumer<String, JSONObjectBuilder> writeOperationsBiConsumer,
 		Consumer<JSONObjectBuilder> writeFieldsRepresentor) {
 
-		List<String> types = representor.getTypes();
+		String type = representor.getPrimaryType();
 
-		types.forEach(
-			type -> {
-				JSONObjectBuilder resourceJsonObjectBuilder =
-					new JSONObjectBuilder();
+		JSONObjectBuilder resourceJsonObjectBuilder = new JSONObjectBuilder();
 
-				String customDocumentation = _getCustomDocumentation(type);
+		String customDocumentation = _getCustomDocumentation(type);
 
-				writeResourceTriConsumer.accept(
-					resourceJsonObjectBuilder, type, customDocumentation);
+		writeResourceTriConsumer.accept(
+			resourceJsonObjectBuilder, type, customDocumentation);
 
-				writeOperationsTriConsumer.accept(
-					name, type, resourceJsonObjectBuilder);
+		writeOperationsBiConsumer.accept(type, resourceJsonObjectBuilder);
 
-				writeFieldsRepresentor.accept(resourceJsonObjectBuilder);
+		writeFieldsRepresentor.accept(resourceJsonObjectBuilder);
 
-				_documentationMessageMapper.onFinishResource(
-					jsonObjectBuilder, resourceJsonObjectBuilder, type);
-			});
+		_documentationMessageMapper.onFinishResource(
+			jsonObjectBuilder, resourceJsonObjectBuilder, type);
 	}
 
 	private final CustomDocumentation _customDocumentation;

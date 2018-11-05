@@ -14,7 +14,7 @@
 
 package com.liferay.apio.architect.internal.message.json;
 
-import com.liferay.apio.architect.internal.annotation.Action;
+import com.liferay.apio.architect.internal.action.ActionSemantics;
 import com.liferay.apio.architect.internal.documentation.Documentation;
 
 /**
@@ -38,7 +38,7 @@ public interface DocumentationMessageMapper
 
 	public default void mapAction(
 		JSONObjectBuilder jsonObjectBuilder, String resourceName, String type,
-		Action action, String description) {
+		ActionSemantics actionSemantics, String description) {
 	}
 
 	/**
@@ -82,7 +82,8 @@ public interface DocumentationMessageMapper
 
 	public default void onFinishAction(
 		JSONObjectBuilder documentationJsonObjectBuilder,
-		JSONObjectBuilder operationJsonObjectBuilder, Action action) {
+		JSONObjectBuilder operationJsonObjectBuilder,
+		ActionSemantics actionSemantics) {
 	}
 
 	public default void onFinishProperty(
