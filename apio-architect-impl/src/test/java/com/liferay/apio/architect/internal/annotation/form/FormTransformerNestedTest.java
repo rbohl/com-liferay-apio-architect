@@ -29,7 +29,7 @@ import com.liferay.apio.architect.internal.annotation.representor.processor.Pars
 import com.liferay.apio.architect.internal.annotation.representor.processor.TypeProcessor;
 import com.liferay.apio.architect.internal.annotation.representor.types.DummyWithNested;
 import com.liferay.apio.architect.internal.annotation.representor.types.DummyWithNested.NestedDummy;
-import com.liferay.apio.architect.internal.form.JSONBodyImpl;
+import com.liferay.apio.architect.internal.body.JSONToBodyConverter.JSONBodyImpl;
 
 import java.util.HashMap;
 import java.util.List;
