@@ -16,8 +16,9 @@ package com.liferay.apio.architect.internal.url;
 
 import static java.lang.String.join;
 
-import com.liferay.apio.architect.internal.jaxrs.resource.NestedResource;
-import com.liferay.apio.architect.internal.jaxrs.resource.RootResource;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
+import com.liferay.apio.architect.internal.action.resource.Resource.Nested;
+import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.operation.BatchCreateOperation;
 import com.liferay.apio.architect.internal.operation.CreateOperation;
 import com.liferay.apio.architect.internal.operation.DeleteOperation;
@@ -84,19 +85,15 @@ public final class URLCreator {
 	public static String createBinaryURL(
 		ApplicationURL applicationURL, String binaryId, Path path) {
 
-		URI uri = UriBuilder.fromMethod(
-			RootResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getName()
+		URI uri = UriBuilder.fromPath(
+			"{name}"
 		).path(
-			NestedResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getId()
+			"{id}"
 		).path(
-			NestedResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", binaryId
-		).build();
+			"{binaryId}"
+		).build(
+			path.getName(), path.getId(), binaryId
+		);
 
 		return createAbsoluteURL(applicationURL, uri.toString());
 	}
@@ -122,48 +119,59 @@ public final class URLCreator {
 	}
 
 	/**
-	 * Returns the URL for a collection.
+	 * Returns the URL of an item resource.
 	 *
 	 * @param  applicationURL the application URL
-	 * @param  name the resource's name
-	 * @return the collection URL
+	 * @param  item the resource
+	 * @return the resource's URL
+	 * @review
 	 */
-	public static String createCollectionURL(
-		ApplicationURL applicationURL, String name) {
+	public static String createItemResourceURL(
+		ApplicationURL applicationURL, Item item) {
 
-		URI uri = UriBuilder.fromMethod(
-			RootResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", name
-		).build();
+		Optional<Object> optional = item.id();
+
+		if (!optional.isPresent()) {
+			return null;
+		}
+
+		URI uri = UriBuilder.fromPath(
+			"{name}"
+		).path(
+			"{id}"
+		).build(
+			item.name(), optional.get()
+		);
 
 		return createAbsoluteURL(applicationURL, uri.toString());
 	}
 
 	/**
-	 * Returns the URL for a nested collection.
+	 * Returns the URL for a nested resource.
 	 *
 	 * @param  applicationURL the application URL
-	 * @param  path the single resource's {@link Path}
-	 * @param  name the nested resource's name
-	 * @return the collection URL
+	 * @param  nested the resource
+	 * @return the resource's URL
+	 * @review
 	 */
-	public static String createNestedCollectionURL(
-		ApplicationURL applicationURL, Path path, String name) {
+	public static String createNestedResourceURL(
+		ApplicationURL applicationURL, Nested nested) {
 
-		URI uri = UriBuilder.fromMethod(
-			RootResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getName()
+		Optional<Object> optional = nested.id();
+
+		if (!optional.isPresent()) {
+			return null;
+		}
+
+		URI uri = UriBuilder.fromPath(
+			"{parentName}"
 		).path(
-			NestedResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getId()
+			"{id}"
 		).path(
-			NestedResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", name
-		).build();
+			"{name}"
+		).build(
+			nested.parentName(), optional.get(), nested.name()
+		);
 
 		return createAbsoluteURL(applicationURL, uri.toString());
 	}
@@ -214,25 +222,21 @@ public final class URLCreator {
 	}
 
 	/**
-	 * Returns the URL of a model's resource.
+	 * Returns the URL for a paged resource.
 	 *
 	 * @param  applicationURL the application URL
-	 * @param  path the resource's {@link Path}
-	 * @return the URL for the {@link
-	 *         com.liferay.apio.architect.resource.CollectionResource}
+	 * @param  paged the paged resource
+	 * @return the resource's URL
+	 * @review
 	 */
-	public static String createSingleURL(
-		ApplicationURL applicationURL, Path path) {
+	public static String createPagedResourceURL(
+		ApplicationURL applicationURL, Paged paged) {
 
-		URI uri = UriBuilder.fromMethod(
-			RootResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getName()
-		).path(
-			NestedResource.class, "nestedResource"
-		).resolveTemplate(
-			"param", path.getId()
-		).build();
+		URI uri = UriBuilder.fromPath(
+			"{name}"
+		).build(
+			paged.name()
+		);
 
 		return createAbsoluteURL(applicationURL, uri.toString());
 	}

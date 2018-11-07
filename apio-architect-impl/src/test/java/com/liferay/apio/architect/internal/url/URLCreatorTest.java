@@ -17,10 +17,10 @@ package com.liferay.apio.architect.internal.url;
 import static com.liferay.apio.architect.internal.url.URLCreator.createAbsoluteURL;
 import static com.liferay.apio.architect.internal.url.URLCreator.createBinaryURL;
 import static com.liferay.apio.architect.internal.url.URLCreator.createCollectionPageURL;
-import static com.liferay.apio.architect.internal.url.URLCreator.createCollectionURL;
-import static com.liferay.apio.architect.internal.url.URLCreator.createNestedCollectionURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createItemResourceURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createNestedResourceURL;
 import static com.liferay.apio.architect.internal.url.URLCreator.createOperationURL;
-import static com.liferay.apio.architect.internal.url.URLCreator.createSingleURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createPagedResourceURL;
 import static com.liferay.apio.architect.internal.url.URLCreator.getPath;
 
 import static java.util.Collections.emptyList;
@@ -30,6 +30,9 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 
 import com.liferay.apio.architect.form.Form;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
+import com.liferay.apio.architect.internal.action.resource.Resource.Nested;
+import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.operation.CreateOperation;
 import com.liferay.apio.architect.internal.operation.DeleteOperation;
 import com.liferay.apio.architect.internal.operation.RetrieveOperation;
@@ -124,15 +127,18 @@ public class URLCreatorTest {
 
 	@Test
 	public void testCreateCollectionURL() {
-		String url = createCollectionURL(_applicationURL, "resource");
+		Paged paged = Paged.of("resource");
+
+		String url = createPagedResourceURL(_applicationURL, paged);
 
 		assertThat(url, is("www.liferay.com/resource"));
 	}
 
 	@Test
 	public void testCreateNestedCollectionURL() {
-		String url = createNestedCollectionURL(
-			_applicationURL, _path, "related");
+		Nested nested = Nested.of(_path.getName(), _path.getId(), "related");
+
+		String url = createNestedResourceURL(_applicationURL, nested);
 
 		assertThat(url, is("www.liferay.com/name/id/related"));
 	}
@@ -153,7 +159,9 @@ public class URLCreatorTest {
 
 	@Test
 	public void testCreateSingleURL() {
-		String url = createSingleURL(_applicationURL, _path);
+		Item item = Item.of(_path.getName(), _path.getId());
+
+		String url = createItemResourceURL(_applicationURL, item);
 
 		assertThat(url, is("www.liferay.com/name/id"));
 	}

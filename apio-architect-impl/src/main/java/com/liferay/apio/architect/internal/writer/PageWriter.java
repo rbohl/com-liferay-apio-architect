@@ -15,12 +15,14 @@
 package com.liferay.apio.architect.internal.writer;
 
 import static com.liferay.apio.architect.internal.url.URLCreator.createCollectionPageURL;
-import static com.liferay.apio.architect.internal.url.URLCreator.createCollectionURL;
-import static com.liferay.apio.architect.internal.url.URLCreator.createNestedCollectionURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createNestedResourceURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createPagedResourceURL;
 import static com.liferay.apio.architect.internal.writer.util.WriterUtil.getFieldsWriter;
 import static com.liferay.apio.architect.internal.writer.util.WriterUtil.getPathOptional;
 
 import com.liferay.apio.architect.alias.representor.NestedListFieldFunction;
+import com.liferay.apio.architect.internal.action.resource.Resource.Nested;
+import com.liferay.apio.architect.internal.action.resource.Resource.Paged;
 import com.liferay.apio.architect.internal.alias.BaseRepresentorFunction;
 import com.liferay.apio.architect.internal.alias.PathFunction;
 import com.liferay.apio.architect.internal.alias.RepresentorFunction;
@@ -296,11 +298,14 @@ public class PageWriter<T> {
 		Optional<Path> optional = _page.getPathOptional();
 
 		return optional.map(
-			path -> createNestedCollectionURL(
-				_requestInfo.getApplicationURL(), path, _page.getResourceName())
+			path -> createNestedResourceURL(
+				_requestInfo.getApplicationURL(),
+				Nested.of(
+					path.getName(), path.getId(), _page.getResourceName()))
 		).orElseGet(
-			() -> createCollectionURL(
-				_requestInfo.getApplicationURL(), _page.getResourceName())
+			() -> createPagedResourceURL(
+				_requestInfo.getApplicationURL(),
+				Paged.of(_page.getResourceName()))
 		);
 	}
 

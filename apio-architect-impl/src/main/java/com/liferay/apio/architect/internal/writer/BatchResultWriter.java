@@ -14,9 +14,10 @@
 
 package com.liferay.apio.architect.internal.writer;
 
-import static com.liferay.apio.architect.internal.url.URLCreator.createSingleURL;
+import static com.liferay.apio.architect.internal.url.URLCreator.createItemResourceURL;
 
 import com.liferay.apio.architect.batch.BatchResult;
+import com.liferay.apio.architect.internal.action.resource.Resource.Item;
 import com.liferay.apio.architect.internal.alias.PathFunction;
 import com.liferay.apio.architect.internal.message.json.BatchResultMessageMapper;
 import com.liferay.apio.architect.internal.message.json.JSONObjectBuilder;
@@ -70,12 +71,14 @@ public class BatchResultWriter<T> {
 
 			_pathFunction.apply(
 				_batchResult.resourceName, identifier
+			).map(
+				path -> Item.of(path.getName(), path.getId())
 			).ifPresent(
-				path -> {
+				item -> {
 					_batchResultMessageMapper.onStartItem(
 						_jsonObjectBuilder, itemJsonObjectBuilder);
 
-					String url = createSingleURL(applicationURL, path);
+					String url = createItemResourceURL(applicationURL, item);
 
 					_batchResultMessageMapper.mapItemSelfURL(
 						_jsonObjectBuilder, itemJsonObjectBuilder, url);
